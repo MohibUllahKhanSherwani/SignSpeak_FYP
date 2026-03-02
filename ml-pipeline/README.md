@@ -3,7 +3,6 @@
 <div align="center">
   <h3>
     <a href="README.md">🏠 Home</a> &nbsp;&nbsp; | &nbsp;&nbsp; 
-    <a href="PHASE_0_SKEPTICISM.md">🎯 Phase 0: Systems Mindset</a>
   </h3>
 </div>
 <hr />
@@ -11,18 +10,22 @@
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)](https://www.python.org/downloads/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15.0-orange.svg)](https://www.tensorflow.org/)
 
-python -m uvicorn api_server:app --host 0.0.0.0 --port 8000        
+python -m uvicorn api_server:app --host 0.0.0.0 --port 8000
+
+Firewall rule (run power shell as admin):
+New-NetFirewallRule -DisplayName "SignSpeak API" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+
 **SignSpeak** is a comprehensive machine learning pipeline for Pakistan Sign Language (PSL) recognition. This repository contains tools for data collection, model training, and real-time inference using MediaPipe landmark detection and LSTM neural networks.
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
-- [Phase 0: Systems Mindset](#phase-0-systems-mindset)
 - [Features](#features)
 - [System Requirements](#system-requirements)
 - [Installation](#installation)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
+- [Mobile Recording (Android via OBS)](#mobile-recording-android-via-obs)
 - [Advanced Usage](#advanced-usage)
 - [Model Comparison](#model-comparison)
 - [Troubleshooting](#troubleshooting)
@@ -238,6 +241,20 @@ python collect_data_gui.py
 
 **Recommended**: Collect 50 sequences per sign for optimal results.
 
+### Mobile Recording (Android via OBS)
+
+If DroidCam setup fails, use Android IP stream + OBS Virtual Camera.
+
+Quick path:
+
+1. Install `IP Webcam` on Android and start stream (`http://<phone-ip>:8080/video`)
+2. In OBS, add stream as `Media Source`
+3. Start OBS `Virtual Camera`
+4. Run `collect_data_gui.py`, click `Rescan Cameras`, select OBS camera index
+
+Detailed setup and validation checklist:
+- `ml_pipeline_data_collection/MOBILE_RECORDING_OBS.md`
+
 ### 3. Train Model
 
 **Option A: Baseline Model** (faster, no augmentation)
@@ -431,6 +448,11 @@ pip install -r requirements.txt
 - Close other apps using camera (Zoom, Teams, etc.)
 - Check Windows camera permissions: Settings → Privacy → Camera
 - Try different camera index in code: `cv2.VideoCapture(1)`
+- If using Android via OBS:
+  - Start OBS Virtual Camera first
+  - Then click `Rescan Cameras` in collector
+  - Select OBS camera index from dropdown
+  - See `ml_pipeline_data_collection/MOBILE_RECORDING_OBS.md`
 
 #### 3. TensorFlow Warnings
 **Warning**: `oneDNN custom operations are on...`
@@ -490,6 +512,9 @@ Additional guides available in `/brain/` artifacts:
 - `augmentation_guide.md` - Data augmentation deep dive
 - `testing_workflow.md` - Comprehensive testing guide
 - `inference_comparison_guide.md` - Model comparison workflow
+
+Additional in-repo workflow guide:
+- `ml_pipeline_data_collection/MOBILE_RECORDING_OBS.md` - Android phone recording via OBS Virtual Camera (no DroidCam)
 
 ---
 
