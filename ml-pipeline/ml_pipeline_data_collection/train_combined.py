@@ -7,7 +7,6 @@ both a baseline and an augmented model (same as the old compare_models.py).
 Before training:
   - Current production models are MOVED into the `original/` folder
     so they are never deleted or overwritten.
-  - Load them via model_paths.py (ORIGINAL_MODEL_BASELINE, etc.)
 
 After training:
   - New models are written to ml_pipeline_data_collection/ (same files
@@ -47,13 +46,13 @@ from actions_config import (
 )
 from data_augmentation import create_augmented_dataset
 from training_logger import log_training_session, log_comparison_session
-from model_paths import (
-    MODEL_BASELINE, MODEL_AUGMENTED,
-    ENCODER_BASELINE, ENCODER_AUGMENTED,
-    ORIGINAL_DIR,
-    ORIGINAL_MODEL_BASELINE, ORIGINAL_MODEL_AUGMENTED,
-    ORIGINAL_ENCODER_BASELINE, ORIGINAL_ENCODER_AUGMENTED,
-)
+
+# -- Output Paths --
+MODEL_DIR = "all_models"
+MODEL_BASELINE    = os.path.join(MODEL_DIR, "action_model_baseline_new.h5")
+MODEL_AUGMENTED   = os.path.join(MODEL_DIR, "action_model_augmented_new.h5")
+ENCODER_BASELINE  = os.path.join(MODEL_DIR, "label_encoder_baseline_new.pkl")
+ENCODER_AUGMENTED = os.path.join(MODEL_DIR, "label_encoder_augmented_new.pkl")
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -64,37 +63,8 @@ DATA_SOURCES = [
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# 1.  Move current models → original/
+# 1.  Load data from both cameras
 # ════════════════════════════════════════════════════════════════════════════
-
-def move_to_original():
-    """
-    Move the active model + encoder files into the `original/` folder.
-    Already-moved files (if original/ already has them) are not overwritten.
-    """
-    mapping = {
-        MODEL_BASELINE:    ORIGINAL_MODEL_BASELINE,
-        MODEL_AUGMENTED:   ORIGINAL_MODEL_AUGMENTED,
-        ENCODER_BASELINE:  ORIGINAL_ENCODER_BASELINE,
-        ENCODER_AUGMENTED: ORIGINAL_ENCODER_AUGMENTED,
-    }
-
-    to_move = {src: dst for src, dst in mapping.items() if os.path.isfile(src)}
-
-    if not to_move:
-        print("ℹ️  No existing model files found – nothing to move.")
-        return
-
-    os.makedirs(ORIGINAL_DIR, exist_ok=True)
-    print(f"\n📦 Moving {len(to_move)} file(s) → original/")
-
-    for src, dst in to_move.items():
-        name = os.path.basename(src)
-        if os.path.isfile(dst):
-            print(f"   ⚠️  {name} already in original/ – skipping move")
-        else:
-            shutil.move(src, dst)
-            print(f"   ✅ {name}")
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -381,10 +351,10 @@ def main():
     print("SIGNSPEAK – Combined Training (MP_Data + MP_Data_mobile)")
     print("=" * 70)
 
-    # 1. Move old models to original/ before we overwrite them
-    move_to_original()
+    # Ensure output directory exists
+    os.makedirs(MODEL_DIR, exist_ok=True)
 
-    # 2. Actions list
+    # 1. Actions list
     actions = load_actions()
     print(f"\n🎯 Actions ({len(actions)}): {', '.join(actions)}")
 

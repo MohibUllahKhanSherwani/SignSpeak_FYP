@@ -15,12 +15,14 @@ from tensorflow.keras.models import load_model
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import LabelEncoder
 
-from model_paths import (
-    MODEL_BASELINE, MODEL_AUGMENTED, 
-    ENCODER_BASELINE, ENCODER_AUGMENTED
-)
 from actions_config import load_actions, SEQUENCE_LENGTH
 from train_combined import load_combined_data, DATA_SOURCES
+
+# -- Hardcoded Model Paths --
+MODEL_BASELINE    = "all_models/action_model_baseline_new.h5"
+MODEL_AUGMENTED   = "all_models/action_model_augmented_new.h5"
+ENCODER_BASELINE  = "all_models/label_encoder_baseline_new.pkl"
+ENCODER_AUGMENTED = "all_models/label_encoder_augmented_new.pkl"
 
 def run_diagnostics(model_path, encoder_path, mode_name):
     """

@@ -18,12 +18,12 @@ def main():
     args = parser.parse_args()
 
     # Model Selection
-    model_path = "action_model_augmented.h5" if args.augmented else "action_model_baseline.h5"
-    encoder_path = "label_encoder_augmented.pkl" if args.augmented else "label_encoder_baseline.pkl"
+    model_path = "all_models/action_model_augmented_new.h5" if args.augmented else "all_models/action_model_baseline_new.h5"
+    encoder_path = "all_models/label_encoder_augmented_new.pkl" if args.augmented else "all_models/label_encoder_baseline_new.pkl"
     
     if not os.path.exists(model_path):
         print(f"Error: {model_path} not found. Running baseline instead.")
-        model_path, encoder_path = "action_model_baseline.h5", "label_encoder_baseline.pkl"
+        model_path, encoder_path = "all_models/action_model_baseline_new.h5", "all_models/label_encoder_baseline_new.pkl"
 
     # Load resources
     print(f"Loading {model_path}...")

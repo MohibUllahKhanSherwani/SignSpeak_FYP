@@ -16,7 +16,9 @@ from typing import List, Optional
 #Importing existing config
 from actions_config import SEQUENCE_LENGTH, load_actions
 from mediapipe_utils import mediapipe_detection, extract_keypoints
-from model_paths import MODEL_BASELINE as MODEL_PATH, ENCODER_BASELINE as ENCODER_PATH
+
+MODEL_PATH = "all_models/action_model_baseline_new.h5"
+ENCODER_PATH = "all_models/label_encoder_baseline_new.pkl"
 
 #Import data model
 from data_models import SequenceData
