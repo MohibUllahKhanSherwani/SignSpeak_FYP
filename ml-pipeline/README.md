@@ -1,11 +1,8 @@
 # SignSpeak Data Collection Module
 
-<div align="center">
-  <h3>
-    <a href="README.md">🏠 Home</a> &nbsp;&nbsp; | &nbsp;&nbsp; 
-  </h3>
-</div>
-<hr />
+### Important: The dataset is live @ 
+
+https://www.kaggle.com/datasets/mohib123456/dynamic-word-level-pakistan-sign-language-dataset/data
 
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)](https://www.python.org/downloads/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15.0-orange.svg)](https://www.tensorflow.org/)
