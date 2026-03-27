@@ -2,13 +2,19 @@
 
 ### Important: The dataset is live @ 
 
-https://www.kaggle.com/datasets/mohib123456/dynamic-word-level-pakistan-sign-language-dataset/data
+### Kaggle:
+ https://www.kaggle.com/datasets/mohib123456/dynamic-word-level-pakistan-sign-language-dataset/data
 
+### HuggingFace:
+ https://huggingface.co/datasets/mohibkhansherwani/DynamicWordLevelPakistanSignLanguageDataset
+ 
 [![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)](https://www.python.org/downloads/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15.0-orange.svg)](https://www.tensorflow.org/)
 
-python -m uvicorn api_server:app --host 0.0.0.0 --port 8000
 
+How to run backend server: python -m uvicorn api_server:app --host 0.0.0.0 --port 8000
+
+Run this command bypass firewall for local testing: 
 Firewall rule (run power shell as admin):
 New-NetFirewallRule -DisplayName "SignSpeak API" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
 
@@ -41,16 +47,6 @@ SignSpeak is part of a larger Final Year Project (FYP) at COMSATS University Isl
 - **Inference**: Real-time sign recognition using hand landmarks
 
 **Note**: This is the ML data collection and training module. The complete SignSpeak system includes a Flutter mobile app and FastAPI backend (developed separately).
-
----
-
-## 🎯 Phase 0: Systems Mindset
-
-As part of the engineering discipline for this project, we adhere to the **Systems Mindset & LLM Skepticism** principles.
-
-👉 **[Read Phase 0 Documentation](PHASE_0_SKEPTICISM.md)**
-
-This document covers the difference between deterministic and probabilistic systems, the tool selection ladder, and reliability engineering for AI pipelines.
 
 ---
 
