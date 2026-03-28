@@ -1,14 +1,54 @@
+# SignSpeak - Root .gitignore
+
+# Python virtual environments & interpreters
 venv/
+.venv/
+ENV/
+env/
+.Python
+workspace.xml
+
+# Python cache and compiled files
 __pycache__/
-*.pyc
-.DS_Store
-.env
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Reports
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.hypothesis/
+**/comparison_reports/
+
+# MediaPipe & Data (Landmark files)
+*.npy
+**/debug_input_frame.jpg
+**/debug_processed_frame.jpg
+**/image.png
+
+# IDEs & System
 .vscode/
 .idea/
-
-SDD/
-SRS/
-ml-pipeline/ml_pipeline_data_collection/debug_input_frame.jpg
-.gitignore
-ml-pipeline/ml_pipeline_data_collection/image.png
-ml-pipeline/ml_pipeline_data_collection/debug_processed_frame.jpg
+.DS_Store
+*.swp
+*.bak

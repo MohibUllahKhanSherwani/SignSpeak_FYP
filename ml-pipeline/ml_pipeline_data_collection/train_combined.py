@@ -26,7 +26,6 @@ import os
 import shutil
 import time
 import json
-import argparse
 import numpy as np
 from datetime import datetime
 
@@ -60,46 +59,25 @@ DATA_SOURCES = [
     os.path.join(SCRIPT_DIR, "MP_Data"),
     os.path.join(SCRIPT_DIR, "MP_Data_mobile"),
 ]
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# 1.  Load data from both cameras
-# ════════════════════════════════════════════════════════════════════════════
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# 2.  Load data from both cameras
-# ════════════════════════════════════════════════════════════════════════════
-
 def load_combined_data(actions, data_sources):
-    """
-    Load landmark sequences from every source folder and concatenate them.
-    Signs missing from one source are silently skipped.
-    """
     sequences, labels = [], []
-
-    print("\n📂 Loading combined data...")
-
+    print("\nLoading combined data...")
     for source_dir in data_sources:
         name = os.path.basename(source_dir)
         if not os.path.isdir(source_dir):
-            print(f"   ⚠️  {name} not found – skipping")
+            print(f"{name} not found – skipping")
             continue
-
-        print(f"\n   📁 {name}")
+        print(f"\n{name}")
         source_count = 0
-
         for action in actions:
             action_path = os.path.join(source_dir, action)
             if not os.path.isdir(action_path):
                 continue
-
             seq_ids = sorted(
                 [d for d in os.listdir(action_path) if d.isdigit()],
                 key=int,
             )
             loaded, skipped = 0, 0
-
             for seq_id in seq_ids:
                 window, ok = [], True
                 for frame_num in range(SEQUENCE_LENGTH):
@@ -113,25 +91,17 @@ def load_combined_data(actions, data_sources):
                     sequences.append(window)
                     labels.append(action)
                     loaded += 1
-
-            note = f"  ({skipped} incomplete skipped)" if skipped else ""
-            print(f"      • {action}: {loaded} sequences{note}")
+            note = f"({skipped} incomplete skipped)" if skipped else ""
+            print(f"• {action}: {loaded} sequences{note}")
             source_count += loaded
-
-        print(f"   → {source_count} from {name}")
+        print(f"→ {source_count} from {name}")
 
     if not sequences:
-        raise RuntimeError("No sequences loaded – check MP_Data / MP_Data_mobile.")
+        raise RuntimeError("No sequences loaded - check MP_Data / MP_Dat_mobile.")
 
     X, y = np.array(sequences), np.array(labels)
-    print(f"\n✅ Combined: {len(X)} sequences, {X.shape[2]} features/frame")
+    print(f"\nCombined: {len(X)} sequences, {X.shape[2]} features/frame")
     return X, y
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# 3.  Model architecture
-# ════════════════════════════════════════════════════════════════════════════
-
 def build_model(input_shape, num_classes, use_dropout=True):
     model = Sequential([
         LSTM(64,  return_sequences=True, activation="tanh", input_shape=input_shape),
@@ -151,25 +121,18 @@ def build_model(input_shape, num_classes, use_dropout=True):
         metrics=["accuracy"],
     )
     return model
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# 4.  Train + evaluate one model
-# ════════════════════════════════════════════════════════════════════════════
-
 def train_and_evaluate(actions, data_sources, use_augmentation,
                        augment_multiplier, epochs):
     print("\n" + "=" * 70)
     mode = "WITH AUGMENTATION" if use_augmentation else "BASELINE (No Augmentation)"
     print(f"Training: {mode}")
     print("=" * 70)
-
     X, y = load_combined_data(actions, data_sources)
 
     if use_augmentation:
-        print(f"\n🔄 Applying {augment_multiplier}x augmentation...")
+        print(f"\nApplying {augment_multiplier}x augmentation...")
         X, y = create_augmented_dataset(X, y, augmentation_multiplier=augment_multiplier)
-        print(f"   → {len(X)} sequences after augmentation")
+        print(f"→ {len(X)} sequences after augmentation")
 
     le = LabelEncoder()
     y_encoded = le.fit_transform(y)
@@ -216,13 +179,12 @@ def train_and_evaluate(actions, data_sources, use_augmentation,
         target_names=le.classes_.tolist(), output_dict=True,
     )
 
-    # Save to production paths (api_server.py reads these exact filenames)
     model_path   = MODEL_AUGMENTED  if use_augmentation else MODEL_BASELINE
     encoder_path = ENCODER_AUGMENTED if use_augmentation else ENCODER_BASELINE
 
     model.save(model_path)
     joblib.dump(le, encoder_path)
-    print(f"\n✅ Saved: {os.path.basename(model_path)}, {os.path.basename(encoder_path)}")
+    print(f"\nSaved: {os.path.basename(model_path)}, {os.path.basename(encoder_path)}")
 
     log_training_session(
         duration_seconds=duration, num_words=len(actions),
@@ -256,12 +218,6 @@ def train_and_evaluate(actions, data_sources, use_augmentation,
         },
         "training_duration": duration,
     }
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# 5.  Comparison report  (same format as old compare_models.py)
-# ════════════════════════════════════════════════════════════════════════════
-
 def compare_and_report(baseline, augmented):
     print("\n" + "=" * 70)
     print("MODEL COMPARISON REPORT")
@@ -277,33 +233,32 @@ def compare_and_report(baseline, augmented):
     test_diff  = a_test  - b_test
     b_gap = b_train - b_test
     a_gap = a_train - a_test
-
     print(f"\n{'Metric':<30} {'Baseline':<20} {'Augmented':<20} {'Δ'}")
     print("-" * 90)
     print(f"{'Training Accuracy':<30} {b_train:<20.2f}% {a_train:<20.2f}% {train_diff:+.2f}%")
     print(f"{'Test Accuracy':<30} {b_test:<20.2f}% {a_test:<20.2f}% {test_diff:+.2f}%")
     print(f"{'Train-Test Gap (overfit)':<30} {b_gap:<20.2f}% {a_gap:<20.2f}% {(b_gap-a_gap):+.2f}%")
 
-    print("\n💡 ANALYSIS:")
+    print("\nANALYSIS:")
     if test_diff > 5:
-        print(f"✅ Augmented: {test_diff:.1f}% higher test accuracy – SIGNIFICANT IMPROVEMENT!")
+        print(f"Augmented: {test_diff:.1f}% higher test accuracy – SIGNIFICANT IMPROVEMENT!")
     elif test_diff > 0:
-        print(f"✅ Augmented: {test_diff:.1f}% higher test accuracy")
+        print(f"Augmented: {test_diff:.1f}% higher test accuracy")
     else:
-        print(f"⚠️  Baseline has higher test accuracy – consider collecting more data")
+        print(f"Baseline has higher test accuracy - consider collecting more data")
     if a_gap < b_gap:
-        print(f"✅ Augmentation reduced overfitting by {b_gap-a_gap:.1f}%")
+        print(f"Augmentation reduced overfitting by {b_gap-a_gap:.1f}%")
     if b_gap > 15:
-        print(f"⚠️  Baseline shows significant overfitting ({b_gap:.1f}% gap)")
+        print(f"Baseline shows significant overfitting ({b_gap:.1f}% gap)")
     if a_gap > 10:
-        print(f"⚠️  Augmented still overfitting ({a_gap:.1f}% gap) – collect more data")
+        print(f"Augmented still overfitting ({a_gap:.1f}% gap) - collect more data")
 
-    print("\n🏆 RECOMMENDATION:")
+    print("\nRECOMMENDATION:")
     if test_diff > 2 or a_gap < b_gap - 3:
-        print(f"   ✅ USE AUGMENTED → {os.path.basename(augmented['model_file'])}")
+        print(f"USE AUGMENTED → {os.path.basename(augmented['model_file'])}")
         recommended = "augmented"
     elif test_diff < -5:
-        print(f"   ⚠️  USE BASELINE  → {os.path.basename(baseline['model_file'])}")
+        print(f"USE BASELINE  → {os.path.basename(baseline['model_file'])}")
         recommended = "baseline"
     else:
         print("   Both models perform similarly")
@@ -327,60 +282,30 @@ def compare_and_report(baseline, augmented):
         },
     }
 
-
-# ════════════════════════════════════════════════════════════════════════════
-# 6.  Main
-# ════════════════════════════════════════════════════════════════════════════
-
 def main():
-    parser = argparse.ArgumentParser(
-        description="Train baseline + augmented models on MP_Data + MP_Data_mobile"
-    )
-    parser.add_argument(
-        "--epochs", type=int, default=EPOCHS,
-        help=f"Epochs (default: {EPOCHS}). Use --epochs 2 for a quick smoke-test.",
-    )
-    parser.add_argument(
-        "--augment-multiplier", type=int, default=AUGMENTATION_MULTIPLIER,
-        help=f"Augmentation multiplier (default: {AUGMENTATION_MULTIPLIER}x)",
-    )
-    args = parser.parse_args()
-
     total_t0 = time.time()
     print("=" * 70)
-    print("SIGNSPEAK – Combined Training (MP_Data + MP_Data_mobile)")
+    print("SIGNSPEAK - Combined Training (MP_Data + MP_Data_mobile)")
     print("=" * 70)
-
-    # Ensure output directory exists
     os.makedirs(MODEL_DIR, exist_ok=True)
-
-    # 1. Actions list
     actions = load_actions()
-    print(f"\n🎯 Actions ({len(actions)}): {', '.join(actions)}")
-
-    # 3. Baseline (no augmentation)
+    print(f"\nActions ({len(actions)}): {', '.join(actions)}")
     print("\n" + "~" * 70)
     baseline = train_and_evaluate(
         actions, DATA_SOURCES,
         use_augmentation=False, augment_multiplier=1,
-        epochs=args.epochs,
+        epochs=EPOCHS,
     )
-
-    # 4. Augmented
     print("\n" + "~" * 70)
-    print("Baseline done – starting augmented training...")
+    print("Baseline done - starting augmented training...")
     augmented = train_and_evaluate(
         actions, DATA_SOURCES,
-        use_augmentation=True, augment_multiplier=args.augment_multiplier,
-        epochs=args.epochs,
+        use_augmentation=True, augment_multiplier=AUGMENTATION_MULTIPLIER,
+        epochs=EPOCHS,
     )
-
-    # 5. Compare + report
     comparison = compare_and_report(baseline, augmented)
     total_duration = time.time() - total_t0
     comparison["total_execution_time_seconds"] = total_duration
-
-    # 6. Save JSON
     report_dir = os.path.join(SCRIPT_DIR, "comparison_reports")
     os.makedirs(report_dir, exist_ok=True)
     report_file = os.path.join(
@@ -389,9 +314,7 @@ def main():
     )
     with open(report_file, "w") as f:
         json.dump(comparison, f, indent=2)
-    print(f"\n💾 Report saved: {report_file}")
-
-    # 7. Log
+    print(f"\nReport saved: {report_file}")
     log_comparison_session(
         total_duration=total_duration,
         baseline_duration=baseline["training_duration"],
@@ -402,8 +325,8 @@ def main():
     )
 
     m, s = divmod(int(total_duration), 60)
-    print(f"\n⏱️  Total: {m}m {s}s")
-    print("✅ Done!")
+    print(f"\nTotal: {m}m {s}s")
+    print("Done!")
 
 
 if __name__ == "__main__":

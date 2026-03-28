@@ -1,3 +1,0 @@
-Date,Time,Duration (s),Words (Classes),Train Accuracy,Val Accuracy,Epochs,Batch Size,Augmented,Model Saved As
-2026-02-09,12:57:39,1291.18,61,0.9816,0.9279,200,16,No,action_model_baseline.h5
-2026-02-09,14:42:05,6111.65,61,1.0000,0.9989,200,16,Yes,action_model_augmented.h5
