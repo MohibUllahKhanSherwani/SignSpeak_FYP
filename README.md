@@ -1,126 +1,85 @@
-# SignSpeak: Word-Level Pakistan Sign Language Recognition System
+# SignSpeak ML Pipeline
 
-![SignSpeak Banner](https://img.shields.io/badge/SignSpeak-PSL%20Recognition-blue?style=for-the-badge)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-In%20Development-yellow.svg)]()
+**SignSpeak_ML_Pipeline** is a comprehensive machine learning pipeline for Pakistan Sign Language (PSL) recognition. This repository contains tools for data collection, model training, and real-time inference using MediaPipe landmark detection and LSTM neural networks.
 
-**SignSpeak** is a comprehensive Final Year Project (FYP) designed to bridge the communication gap between the Deaf/Hard-of-Hearing community and hearing individuals in Pakistan. It is a mobile-based system that translates Pakistan Sign Language (PSL) gestures into text.
+### The Dataset is live @ the following links:
+- [**Kaggle**](https://www.kaggle.com/datasets/mohib123456/dynamic-word-level-pakistan-sign-language-dataset/data)
+- [**HuggingFace**](https://huggingface.co/datasets/mohibkhansherwani/DynamicWordLevelPakistanSignLanguageDataset)
 
----
+## Features
 
-## 📖 Table of Contents
-- [Overview](#-overview)
-- [System Architecture](#-system-architecture)
-- [Key Features](#-key-features)
-- [Technology Stack](#-technology-stack)
-- [Repository Structure](#-repository-structure)
-- [Getting Started](#-getting-started)
-- [Documentation](#-documentation)
-- [Authors](#-authors)
+- **Data Collection:** GUI-based tool to easily record and label full PSL sign sequences.
+- **Data Augmentation:** Automatically expand your dataset 3-5x using time warping, spatial scaling, and sequence mirroring.
+- **Model Training:** Train both standard and augmented models with automated benchmarking and checkpointing.
+- **Real-Time Inference:** Live sign prediction from your webcam with stability filtering to eliminate noisy predictions.
 
----
+## Tech Stack
 
-## 🎯 Overview
+- **Language:** Python (3.9 - 3.11)
+- **Framework:** TensorFlow / Keras (LSTM Networks)
+- **Computer Vision:** MediaPipe (Hand Landmarking), OpenCV
 
-SignSpeak aims to provide an accessible and efficient communication tool for PSL users. The system leverages computer vision and machine learning to interpret sign language gestures captured via a smartphone camera and translates them into understandable text.
+## Model Architecture & Parameters
 
-**Core Objectives:**
-*   Real-time translation of PSL words.
-*   Mobile-first approach for accessibility.
-*   Lightweight and efficient architecture suitable for mid-range smartphones.
+The core machine learning model uses a Deep LSTM architecture optimized for sequential time-series data:
 
----
+- **Input Shape:** `(60 frames, 126 features)` - Covers a 60-frames window mapping 21 landmarks (x, y, z) per hand.
+- **Layers:** 3 LSTM layers followed by Dense layers (`tanh` activation used to prevent gradient explosion).
+- **Parameters:** ~250K total parameters for high efficiency.
+- **Key Hyperparameters:**
+  - `SEQUENCE_LENGTH`: 60 (2.0-3.0s buffer)
+  - `BATCH_SIZE`: 16
+  - `EPOCHS`: 200 (with Early Stopping)
 
-## 🏗 System Architecture
+## Local Setup
 
-The SignSpeak ecosystem consists of three main components:
+### 1. Configure the Environment
 
-1.  **Mobile Application (Frontend)**: A Flutter-based app that serves as the user interface for capturing video frames and displaying translations.
-2.  **Backend Server**: A FastAPI (Python) server that handles heavy computations, including landmark detection (MediaPipe) and ML inference (TensorFlow/Keras).
-3.  **Admin Dashboard**: A web-based panel for managing user accounts, reviewing complaints, and monitoring system performance.
+Create a virtual environment to manage dependencies:
 
-### High-Level Workflow
-1.  **Capture**: User points camera at the signer via the Mobile App.
-2.  **Process**: Frames are sent to the Backend Server.
-3.  **Analyze**: Backend extracts landmarks using **MediaPipe** and feeds them into an **LSTM-based Neural Network**.
-4.  **Translate**: Predicted word is returned to the app and displayed to the user.
-
----
-
-## ✨ Key Features
-
-*   **Real-time PSL Translation**: Instant recognition of sign language gestures.
-*   **User Authentication**: Secure signup and login via Firebase.
-*   **PSL Dictionary**: Built-in reference for learning implementation of standard signs.
-*   **Complaint Management**: Users can report incorrect translations or bugs; Admins can review and resolve them.
-*   **Profile Management**: extensive user profile customization.
-*   **Accessibility Settings**: Adjustable font sizes and UI elements.
-
----
-
-## 🛠 Technology Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Mobile App** | Flutter (Dart) |
-| **Backend API** | FastAPI (Python) |
-| **ML/AI** | TensorFlow, Keras, MediaPipe |
-| **Database/Auth**| Firebase (Authentication, Firestore) |
-| **Admin Web** | React/Next.js (Planned) |
-| **DevOps** | Docker (Planned) |
-
----
-
-## 📂 Repository Structure
-
-```
-d:/SignSpeak/SignSpeak-FYP/
-├── ml-pipeline/          # Machine Learning Data Collection & Training Module
-│   ├── SDD/              # Software Design Documents
-│   ├── SRS/              # Software Requirements Specifications
-│   ├── ml_pipeline_data_collection/ # Core ML scripts (Capture, Train, Inference)
-│   └── ...
-├── front-end-mobile/     # Flutter Mobile Application (Under Development)
-├── front-end-web/        # Admin Dashboard Web App (Under Development)
-└── README.md             # Master Project Documentation
+```bash
+cd ml-pipeline
+python -m venv venv
 ```
 
----
+Activate the virtual environment:
+- **Windows:** `.\venv\Scripts\Activate.ps1`
+- **Mac/Linux:** `source venv/bin/activate`
 
-## 🚀 Getting Started
+### 2. Install Requirements
 
-Currently, the **ML Pipeline** is the active component available for setup and testing.
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-### Prerequisites
-*   Python 3.9 - 3.11
-*   Webcam
+## Quick Running Guide
 
-### Running the ML Pipeline
-Please refer to the detailed [ML Pipeline README](ml-pipeline/README.md) for instructions on how to:
-1.  Install dependencies.
-2.  Collect your own dataset using the GUI.
-3.  Train the LSTM model.
-4.  Run real-time inference via webcam.
+All scripts should be executed from the root of the ml-pipeline module.
 
----
+### 1. Data Collection
 
-## 📚 Documentation
+Use the GUI to record and capture hand landmarks from your webcam:
+```bash
+python ml_pipeline_data_collection/collect_data_gui.py
+```
 
-Detailed documentation can be found within the `ml-pipeline` directory:
-*   [**Software Requirements Specification (SRS)**](ml-pipeline/SRS/srs.txt): Detailed functional and non-functional requirements.
-*   [**Software Design Document (SDD)**](ml-pipeline/SDD/sdd.txt): Architecture, data flow, and component design.
+### 2. Model Training
 
----
+Train an baseline model or an augmented model (which uses mirroring/warping for better generalization):
 
-## 👥 Authors
+```bash
+#Training both baseline and augmented
+python ml_pipeline_data_collection/train_combined.py
 
-**COMSATS University Islamabad, Abbottabad Campus**
-*   **AbuZar Babar** (CIIT/FA22-BSE-133/ATD)
-*   **Mohib Ullah Khan Sherwani** (CIIT/FA22-BSE-125/ATD)
-*   **M. Abdullah Umar** (CIIT/FA22-BSE-126/ATD)
+# Test and evauluate models
+python ml_pipeline_data_collection/evaluate_models.py
+```
 
-**Supervisor:**
-*   Dr. Rab Nawaz Jadoon
+### 3. Real-Time Inference
 
----
+Test the predictions directly from your webcam:
 
+```bash
+python ml_pipeline_data_collection/realtime_inference_minimal.py
+```
