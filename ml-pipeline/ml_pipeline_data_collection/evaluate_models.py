@@ -11,10 +11,11 @@ from sklearn.model_selection import train_test_split
 from actions_config import load_actions, SEQUENCE_LENGTH
 from train_combined import load_combined_data, DATA_SOURCES
 
-MODEL_BASELINE    = "all_models/action_model_baseline_new.h5"
-MODEL_AUGMENTED   = "all_models/action_model_augmented_new.h5"
-ENCODER_BASELINE  = "all_models/label_encoder_baseline_new.pkl"
-ENCODER_AUGMENTED = "all_models/label_encoder_augmented_new.pkl"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_BASELINE    = os.path.join(SCRIPT_DIR, "all_models", "action_model_baseline_new.h5")
+MODEL_AUGMENTED   = os.path.join(SCRIPT_DIR, "all_models", "action_model_augmented_new.h5")
+ENCODER_BASELINE  = os.path.join(SCRIPT_DIR, "all_models", "label_encoder_baseline_new.pkl")
+ENCODER_AUGMENTED = os.path.join(SCRIPT_DIR, "all_models", "label_encoder_augmented_new.pkl")
 
 TEST_SIZE    = 0.2
 RANDOM_STATE = 42

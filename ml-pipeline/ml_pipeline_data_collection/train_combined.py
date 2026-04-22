@@ -47,13 +47,12 @@ from data_augmentation import create_augmented_dataset
 from training_logger import log_training_session, log_comparison_session
 
 # -- Output Paths --
-MODEL_DIR = "all_models"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(SCRIPT_DIR, "all_models")
 MODEL_BASELINE    = os.path.join(MODEL_DIR, "action_model_baseline_new.h5")
 MODEL_AUGMENTED   = os.path.join(MODEL_DIR, "action_model_augmented_new.h5")
 ENCODER_BASELINE  = os.path.join(MODEL_DIR, "label_encoder_baseline_new.pkl")
 ENCODER_AUGMENTED = os.path.join(MODEL_DIR, "label_encoder_augmented_new.pkl")
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DATA_SOURCES = [
     os.path.join(SCRIPT_DIR, "MP_Data"),

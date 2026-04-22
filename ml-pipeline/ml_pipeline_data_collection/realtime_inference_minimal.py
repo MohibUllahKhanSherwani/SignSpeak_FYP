@@ -11,8 +11,9 @@ import os
 from actions_config import load_actions, SEQUENCE_LENGTH, PREDICTION_THRESHOLD
 
 def main():
-    model_path = "all_models/action_model_baseline_new.h5"
-    encoder_path = "all_models/label_encoder_baseline_new.pkl"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(script_dir, "all_models", "action_model_baseline_new.h5")
+    encoder_path = os.path.join(script_dir, "all_models", "label_encoder_baseline_new.pkl")
     print(f"Loading {model_path}...")
     actions = load_actions()
     model = load_model(model_path)

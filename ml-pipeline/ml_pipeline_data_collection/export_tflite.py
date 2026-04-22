@@ -8,18 +8,22 @@ from tensorflow.keras.models import load_model
 
 from actions_config import SEQUENCE_LENGTH
 
-FEATURES_PER_FRAME = 126
+import os
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 MODEL_ARTIFACTS = {
     "baseline": {
-        "model_path": "all_models/action_model_baseline_new.h5",
-        "encoder_path": "all_models/label_encoder_baseline_new.pkl",
+        "model_path": os.path.join(SCRIPT_DIR, "all_models", "action_model_baseline_new.h5"),
+        "encoder_path": os.path.join(SCRIPT_DIR, "all_models", "label_encoder_baseline_new.pkl"),
     },
     "augmented": {
-        "model_path": "all_models/action_model_augmented_new.h5",
-        "encoder_path": "all_models/label_encoder_augmented_new.pkl",
+        "model_path": os.path.join(SCRIPT_DIR, "all_models", "action_model_augmented_new.h5"),
+        "encoder_path": os.path.join(SCRIPT_DIR, "all_models", "label_encoder_augmented_new.pkl"),
     }
 }
+
+
+FEATURES_PER_FRAME = 126
 
 
 def convert_to_tflite(model: tf.keras.Model, quantize: bool = False) -> bytes:
